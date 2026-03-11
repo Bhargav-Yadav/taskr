@@ -1,4 +1,4 @@
-const API = "http://localhost:5000/api";
+const API = "https://taskr-jiel.onrender.com/api";
 
 const getToken = () => localStorage.getItem("tm_token");
 
