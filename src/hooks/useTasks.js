@@ -1,47 +1,36 @@
 import { useState, useEffect } from "react";
-import { DB } from "../services/storage";
-
-function generateId() {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
+import { request } from "../services/storage";
 
 export function useTasks(userId) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    if (userId) {
-      const all = DB.getTasks();
-      setTasks(all.filter((t) => t.userId === userId));
-    }
+    if (userId) fetchTasks();
   }, [userId]);
 
-  const persist = (updated) => {
-    const others = DB.getTasks().filter((t) => t.userId !== userId);
-    DB.saveTasks([...others, ...updated]);
-    setTasks(updated);
+  const fetchTasks = async () => {
+    const res = await request("/tasks");
+    if (Array.isArray(res)) setTasks(res);
   };
 
-  const addTask = (data) => {
-    const task = {
-      id: generateId(),
-      userId,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-      ...data,
-    };
-    persist([...tasks, task]);
+  const addTask = async (data) => {
+    const res = await request("/tasks", "POST", data);
+    if (res._id) setTasks((prev) => [res, ...prev]);
   };
 
-  const updateTask = (id, data) =>
-    persist(tasks.map((t) => (t.id === id ? { ...t, ...data } : t)));
+  const updateTask = async (id, data) => {
+    const res = await request(`/tasks/${id}`, "PUT", data);
+    if (res._id) setTasks((prev) => prev.map((t) => (t.id === id ? res : t)));
+  };
 
-  const deleteTask = (id) => persist(tasks.filter((t) => t.id !== id));
+  const deleteTask = async (id) => {
+    await request(`/tasks/${id}`, "DELETE");
+    setTasks((prev) => prev.filter((t) => t._id !== id));
+  };
 
-  const toggleStatus = (id) => {
-    const task = tasks.find((t) => t.id === id);
-    updateTask(id, {
-      status: task.status === "completed" ? "pending" : "completed",
-    });
+  const toggleStatus = async (id) => {
+    const task = tasks.find((t) => t._id === id);
+    await updateTask(id, { status: task.status === "completed" ? "pending" : "completed" });
   };
 
   return { tasks, addTask, updateTask, deleteTask, toggleStatus };

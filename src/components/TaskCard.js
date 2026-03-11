@@ -13,7 +13,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }) {
         {/* Checkbox */}
         <button
           style={{ ...styles.check, background: isDone ? "#1a1a2e" : "transparent", borderColor: isDone ? "#1a1a2e" : "#d1d5db" }}
-          onClick={() => onToggle(task.id)}
+          onClick={() => onToggle(task._id)}
         >
           {isDone && <span style={{ color: "#fff", fontSize: 10 }}>✓</span>}
         </button>
@@ -41,7 +41,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }) {
         {/* Actions */}
         <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
           <button style={s.iconBtn} onClick={() => onEdit(task)} title="Edit">✎</button>
-          <button style={{ ...s.iconBtn, color: "#ef4444" }} onClick={() => onDelete(task.id)} title="Delete">✕</button>
+          <button style={{ ...s.iconBtn, color: "#ef4444" }} onClick={() => onDelete(task._id)} title="Delete">✕</button>
         </div>
       </div>
     </div>

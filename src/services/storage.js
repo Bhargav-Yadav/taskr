@@ -1,15 +1,18 @@
-// Abstraction layer over localStorage.
-// Swap these functions out for real fetch() API calls
-// when you add a backend.
+const API = "http://localhost:5000/api";
 
-export const DB = {
-  getUsers: () => JSON.parse(localStorage.getItem("tm_users") || "[]"),
-  saveUsers: (users) => localStorage.setItem("tm_users", JSON.stringify(users)),
+const getToken = () => localStorage.getItem("tm_token");
 
-  getTasks: () => JSON.parse(localStorage.getItem("tm_tasks") || "[]"),
-  saveTasks: (tasks) => localStorage.setItem("tm_tasks", JSON.stringify(tasks)),
-
-  getSession: () => localStorage.getItem("tm_session"),
-  saveSession: (token) => localStorage.setItem("tm_session", token),
-  clearSession: () => localStorage.removeItem("tm_session"),
+export const request = async (endpoint, method = "GET", body = null) => {
+  const headers = { "Content-Type": "application/json" };
+  if (getToken()) headers["Authorization"] = `Bearer ${getToken()}`;
+  const res = await fetch(`${API}${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null,
+  });
+  return res.json();
 };
+
+export const saveToken = (token) => localStorage.setItem("tm_token", token);
+export const clearToken = () => localStorage.removeItem("tm_token");
+export const tokenExists = () => !!localStorage.getItem("tm_token");
