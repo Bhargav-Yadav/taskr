@@ -1,7 +1,7 @@
 {
   "name": "taskr-backend",
   "version": "1.0.0",
-  "scripts": {
+"scripts": {
     "start": "node server.js",
     "build": "echo build complete"
   },
